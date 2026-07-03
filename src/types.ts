@@ -55,6 +55,8 @@ export interface AppSettings {
   provider: LlmProviderId;
   geminiKey: string;
   openaiKey: string;
+  /** false の場合、キーは localStorage に書き込まずメモリ上のみ（再読み込みで消える） */
+  persistKeys: boolean;
   template: string;
   titleTemplate: string;
 }
@@ -76,6 +78,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   provider: 'mock',
   geminiKey: '',
   openaiKey: '',
+  persistKeys: true,
   template: DEFAULT_TEMPLATE,
   titleTemplate: DEFAULT_TITLE_TEMPLATE,
 };

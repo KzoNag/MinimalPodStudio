@@ -11,6 +11,31 @@ export function SettingsModal({ settings, onSave, onClose }: SettingsModalProps)
   const [draft, setDraft] = useState<AppSettings>({ ...settings });
   const [showKeys, setShowKeys] = useState(false);
 
+  const keyField = (
+    label: React.ReactNode,
+    key: 'geminiKey' | 'openaiKey',
+    placeholder: string,
+  ) => (
+    <div className="form-row">
+      <label>{label}</label>
+      <div className="card-row" style={{ margin: 0 }}>
+        <input
+          type={showKeys ? 'text' : 'password'}
+          value={draft[key]}
+          onChange={(e) => setDraft({ ...draft, [key]: e.target.value.trim() })}
+          placeholder={placeholder}
+          autoComplete="off"
+          style={{ flex: 1 }}
+        />
+        {draft[key] && (
+          <button className="danger" onClick={() => setDraft({ ...draft, [key]: '' })} title="このキーを消去します">
+            削除
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -28,33 +53,26 @@ export function SettingsModal({ settings, onSave, onClose }: SettingsModalProps)
           </select>
         </div>
 
-        <div className="form-row">
-          <label>Gemini APIキー（aistudio.google.com/apikey で無料発行）</label>
-          <input
-            type={showKeys ? 'text' : 'password'}
-            value={draft.geminiKey}
-            onChange={(e) => setDraft({ ...draft, geminiKey: e.target.value.trim() })}
-            placeholder="AIza..."
-            autoComplete="off"
-          />
-        </div>
-
-        <div className="form-row">
-          <label>OpenAI APIキー</label>
-          <input
-            type={showKeys ? 'text' : 'password'}
-            value={draft.openaiKey}
-            onChange={(e) => setDraft({ ...draft, openaiKey: e.target.value.trim() })}
-            placeholder="sk-..."
-            autoComplete="off"
-          />
-        </div>
+        {keyField('Gemini APIキー（aistudio.google.com/apikey で無料発行）', 'geminiKey', 'AIza...')}
+        {keyField('OpenAI APIキー', 'openaiKey', 'sk-...')}
 
         <div className="card-row hint">
           <label>
             <input type="checkbox" checked={showKeys} onChange={(e) => setShowKeys(e.target.checked)} /> キーを表示
           </label>
-          <span>キーはこのブラウザの localStorage にのみ保存されます。共有PCでは注意してください。</span>
+          <label>
+            <input
+              type="checkbox"
+              checked={!draft.persistKeys}
+              onChange={(e) => setDraft({ ...draft, persistKeys: !e.target.checked })}
+            />{' '}
+            キーをこのブラウザに保存しない（再読み込みで消えます・共有PC向け）
+          </label>
+        </div>
+        <div className="hint" style={{ marginBottom: 4 }}>
+          キーは既定でこのブラウザの localStorage にのみ保存されます（開発者のサーバー等へは送信されません）。
+          削除・保存オフは「保存」を押した時点で反映されます。漏洩に備え、Gemini はリファラー制限、OpenAI
+          は月額上限の設定を推奨（詳細は README）。
         </div>
 
         <div className="form-row">

@@ -41,7 +41,9 @@ export default function App() {
   const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    // 「保存しない」設定時はキーをメモリ上のみに保持し、localStorage には書かない
+    const toSave = settings.persistKeys ? settings : { ...settings, geminiKey: '', openaiKey: '' };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(toSave));
   }, [settings]);
 
   const setMix = (updater: (m: MixState) => MixState) => {
