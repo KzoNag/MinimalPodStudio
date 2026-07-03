@@ -4,6 +4,7 @@ import { computePeaks, decodeBlob, getAudioContext, toMono } from './audio/decod
 import { BusyOverlay } from './components/common';
 import { EditStep } from './components/EditStep';
 import { FinishStep } from './components/FinishStep';
+import { HelpModal } from './components/HelpModal';
 import { RecordStep } from './components/RecordStep';
 import { SettingsModal } from './components/SettingsModal';
 import { deleteSession } from './db';
@@ -38,7 +39,16 @@ export default function App() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(loadSettings);
   const [showSettings, setShowSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [introDismissed, setIntroDismissed] = useState(
+    () => localStorage.getItem('podcast-studio-intro-dismissed') === '1',
+  );
   const [busy, setBusy] = useState<string | null>(null);
+
+  const dismissIntro = () => {
+    localStorage.setItem('podcast-studio-intro-dismissed', '1');
+    setIntroDismissed(true);
+  };
 
   useEffect(() => {
     // 「保存しない」設定時はキーをメモリ上のみに保持し、localStorage には書かない
@@ -229,10 +239,16 @@ export default function App() {
   return (
     <>
       <header className="app-header">
-        <div className="app-title">
-          <span className="mic-emoji">🎙️</span>Minimal Pod Studio
+        <div>
+          <div className="app-title">
+            <span className="mic-emoji">🎙️</span>Minimal Pod Studio
+          </div>
+          <div className="app-tagline">Podcastの収録から公開までを、最小の手数で。ブラウザだけで完結</div>
         </div>
-        <button onClick={() => setShowSettings(true)}>⚙️ 設定</button>
+        <div className="header-buttons">
+          <button onClick={() => setShowHelp(true)}>❓ ヘルプ</button>
+          <button onClick={() => setShowSettings(true)}>⚙️ 設定</button>
+        </div>
       </header>
 
       <nav className="steps">
@@ -257,6 +273,22 @@ export default function App() {
 
       {step === 0 && (
         <>
+          {!introDismissed && (
+            <div className="intro-banner">
+              <div>
+                <b>👋 はじめまして。</b>
+                このツールは「簡単にPodcastを収録して公開する」ことに特化しています。凝った編集機能はあえてありません
+                — 収録して、前後を切って、BGMを付けて、公開。それだけです。
+              </div>
+              <div className="card-row" style={{ margin: '10px 0 0' }}>
+                <button className="primary" onClick={() => setShowHelp(true)}>
+                  使い方を見る
+                </button>
+                <button onClick={loadDemo}>デモで試す</button>
+                <button onClick={dismissIntro}>閉じる</button>
+              </div>
+            </div>
+          )}
           <RecordStep onComplete={handleRecordingComplete} onImport={loadFromFiles} />
           <div style={{ textAlign: 'center', marginTop: 8 }}>
             <button className="hint" style={{ border: 'none', background: 'none' }} onClick={loadDemo}>
@@ -271,6 +303,7 @@ export default function App() {
       {showSettings && (
         <SettingsModal settings={settings} onSave={setSettings} onClose={() => setShowSettings(false)} />
       )}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       {busy && <BusyOverlay message={busy} />}
     </>
   );

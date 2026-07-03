@@ -129,6 +129,39 @@ input[type="checkbox"] {
   gap: 8px;
   margin: 8px 0 24px;
 }
+.app-tagline {
+  color: var(--text-dim);
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+.header-buttons {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.intro-banner {
+  background: #14222c;
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  font-size: 13.5px;
+}
+
+.modal h3 {
+  font-size: 14px;
+  margin: 18px 0 6px;
+  color: var(--accent);
+}
+.modal .help-list {
+  margin: 6px 0;
+  padding-left: 22px;
+}
+.modal .help-list li {
+  margin: 5px 0;
+}
+
 .step-chip {
   flex: 1;
   display: flex;
